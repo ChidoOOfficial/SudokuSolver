@@ -17,8 +17,12 @@ class SudokuEntry {
         this.value = value;
     }
 
-    public int[] getPosition() {
-        return new int[]{xPosition, yPosition};
+    public int getXPosition() {
+        return xPosition;
+    }
+
+    public int getYPosition() {
+        return yPosition;
     }
 
     public int getValue() {
