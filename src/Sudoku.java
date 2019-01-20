@@ -8,7 +8,7 @@ import java.util.*;
  * @author Chidozie Onyeze
  * @version 1.0
  */
-class Sudoku {
+public class Sudoku {
     private int[][] board;
     private PossibilitySpace[][] possibilityList;
     boolean solvable;
@@ -49,7 +49,7 @@ class Sudoku {
          * @param value Value to be removed
          */
         public void remove(int value) {
-            possibilityList.remove(value);
+            possibilityList.remove((Integer)value);
         }
 
         /**
@@ -172,6 +172,7 @@ class Sudoku {
         if (CheckValidity(xPosition,yPosition)) {
             updateProbabilitySpace(xPosition, yPosition);
             updateProbabilitySpaceAround(xPosition, yPosition);
+            solvable = checkSolvable();
             return true;
         } else {
             board[xPosition][yPosition] = currentValue;
@@ -190,6 +191,7 @@ class Sudoku {
         board[xPosition][yPosition] = entry.getValue();
         updateProbabilitySpace(xPosition, yPosition);
         updateProbabilitySpaceAround(xPosition, yPosition);
+        solvable = checkSolvable();
     }
 
     /**
@@ -234,8 +236,8 @@ class Sudoku {
             }
 
             for (int i = 0; i < size; i++) {
-                intList.remove(board[xPosition][i]);
-                intList.remove(board[i][yPosition]);
+                intList.remove((Integer)board[xPosition][i]);
+                intList.remove((Integer)board[i][yPosition]);
             }
 
             int p = xPosition / 3;
@@ -243,7 +245,7 @@ class Sudoku {
 
             for (int i = p; i < p + 3; i++) {
                 for (int j = q; j < q + 3; j++) {
-                    intList.remove(board[i][j]);
+                    intList.remove((Integer)board[i][j]);
                 }
             }
 
