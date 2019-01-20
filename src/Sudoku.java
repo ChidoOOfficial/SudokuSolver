@@ -1,9 +1,8 @@
 package src;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+
 /**
- * Sudoku class encapulates the Sudoku board with
+ * Sudoku class encapsulates the Sudoku board with
  * any given board state.
  *
  * @author Chidozie Onyeze
@@ -12,23 +11,53 @@ import java.util.List;
 class Sudoku {
     private int[][] board;
     private PossibilitySpace[][] possibilityList;
-    private static int size = 9;
+    boolean solvable;
+    public static int size = 9;
 
+    /**
+     * Encapsulation of the Possible Value that the Sudoku can take
+     * at an index and still be valid
+     *
+     * @author Chidozie Onyeze
+     * @version 1.0
+     */
     private class PossibilitySpace implements Iterable<Integer>{
         private List<Integer> possibilityList;
 
+        /**
+         * Constructor for a possibility space initializes
+         * the backing array list
+         *
+         */
         public  PossibilitySpace() {
             possibilityList = new ArrayList<>();
         }
 
+        /**
+         * Constructor for a possibility space sets the backing
+         * array list to be the input array
+         *
+         * @param possibilityList Array to be used as backing array list
+         */
         public PossibilitySpace(List<Integer> possibilityList) {
             this.possibilityList = possibilityList;
         }
 
+        /**
+         * Remove and element from the backing array list
+         *
+         * @param value Value to be removed
+         */
         public void remove(int value) {
             possibilityList.remove(value);
         }
 
+        /**
+         * Check whether a given value is in the possibility space
+         *
+         * @param value Value to look for in the backing list
+         * @return Whether the specified value is in the list
+         */
         public boolean contains(int value) {
             return possibilityList.contains(value);
         }
@@ -36,6 +65,15 @@ class Sudoku {
         @Override
         public Iterator<Integer> iterator() {
             return possibilityList.iterator();
+        }
+
+        /**
+         * Size of the backing List
+         *
+         * @return Size of the backing list
+         */
+        public int size() {
+            return possibilityList.size();
         }
     }
 
@@ -58,6 +96,8 @@ class Sudoku {
         for (SudokuEntry entry : fixedEntries) {
             board[entry.getXPosition()][entry.getYPosition()] = entry.getValue();
         }
+
+        updateProbabilitySpace();
     }
 
     /**
@@ -69,6 +109,8 @@ class Sudoku {
     public Sudoku(int[][] board) {
         this.board = board;
         possibilityList = new PossibilitySpace[size][size];
+
+        updateProbabilitySpace();
     }
 
     /**
@@ -83,6 +125,8 @@ class Sudoku {
                 board[i][j] = 0;
             }
         }
+
+        updateProbabilitySpace();
     }
 
     //Public Methods
@@ -96,7 +140,7 @@ class Sudoku {
     }
 
     /**
-     * Create a duplicate board object containg the
+     * Create a duplicate board object containing the
      * same data
      *
      * @return  Duplicate board object
@@ -135,6 +179,26 @@ class Sudoku {
         }
     }
 
+    /**
+     * Adds an entry that is known to be valid to a specified location
+     *
+     * @param entry object specifying the target location and target value
+     */
+    public void addValidEntry(SudokuEntry entry){
+        int xPosition = entry.getXPosition();
+        int yPosition = entry.getYPosition();
+        board[xPosition][yPosition] = entry.getValue();
+        updateProbabilitySpace(xPosition, yPosition);
+        updateProbabilitySpaceAround(xPosition, yPosition);
+    }
+
+    /**
+     * Update the possibility space of squares in the same row, column or square
+     * as the given index
+     *
+     * @param xPosition x value for specifying index
+     * @param yPosition y value for specifying index
+     */
     private void updateProbabilitySpaceAround(int xPosition, int yPosition) {
         if(board[xPosition][yPosition] != 0) {
             for (int i = 0; i < size; i++) {
@@ -153,9 +217,17 @@ class Sudoku {
         }
     }
 
+    /**
+     * Update the possibility space of a given index
+     *
+     * @param xPosition x value for specifying index
+     * @param yPosition y value for specifying index
+     */
     private void updateProbabilitySpace(int xPosition, int yPosition) {
         //Return if location is already filled
-        if(board[xPosition][yPosition] == 0) {
+        if(board[xPosition][yPosition] != 0) {
+            possibilityList[xPosition][yPosition] = new PossibilitySpace(new ArrayList<>());
+        } else {
             List<Integer> intList = new ArrayList<>(9);
             for (int i = 1; i < 10; i++) {
                 intList.add(i);
@@ -179,12 +251,18 @@ class Sudoku {
         }
     }
 
+    /**
+     * Update the possibility space of a all square on the board
+     *
+     */
     private void updateProbabilitySpace() {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 updateProbabilitySpace(i, j);
             }
         }
+
+        solvable = checkSolvable();
     }
 
     private boolean CheckValidity(int xPosition, int yPosition) {
@@ -234,6 +312,19 @@ class Sudoku {
         return true;
     }
 
+    public boolean checkSolvable() {
+        boolean validSolvable = true;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if(board[i][j] == 0 && possibilityList[i][j].size() == 0) {
+                    solvable = false;
+                }
+            }
+        }
+
+        return validSolvable;
+    }
+
     /**
      * Check whether a specific location of the board
      * is empty
@@ -247,8 +338,8 @@ class Sudoku {
         return board[i][j] == 0;
     }
 
-    public Iterator<Integer> getPossibilitySpaceIterator(int xPosition, int yPosition) {
-        return possibilityList[xPosition][yPosition].iterator();
+    public Iterable<Integer> getPossibilitySpaceIterable(int xPosition, int yPosition) {
+        return ()-> possibilityList[xPosition][yPosition].iterator();
     }
 
     @Override
@@ -283,8 +374,22 @@ class Sudoku {
         }
     }
 
-    public static void main(String[] args) {
-        System.out.print(Integer.toString(6/3));
+    public boolean isSolvable() {
+        return solvable;
+    }
+
+    public boolean isSolved() {
+        if(isSolvable()) {
+            for (int i = 0; i < size; i++) {
+                for (int j = 0; j < size; j++ ) {
+                    if(board[i][j] == 0) return false;
+                }
+            }
+
+            return true;
+        } else {
+            return false;
+        }
     }
 }
 
