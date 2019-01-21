@@ -9,10 +9,10 @@ import java.util.*;
  * @version 1.0
  */
 public class Sudoku {
-    private int[][] board;
-    private PossibilitySpace[][] possibilityList;
-    private boolean solvable;
-    static int size = 9;
+    protected int[][] board;
+    protected PossibilitySpace[][] possibilityList;
+    protected boolean solvable;
+    protected static int size = 9;
 
     /**
      * Encapsulation of the Possible Value that the Sudoku can take
@@ -21,7 +21,7 @@ public class Sudoku {
      * @author Chidozie Onyeze
      * @version 1.0
      */
-    private class PossibilitySpace implements Iterable<Integer>{
+    protected class PossibilitySpace implements Iterable<Integer>{
         private List<Integer> possibilityList;
 
         /**
@@ -48,7 +48,7 @@ public class Sudoku {
          *
          * @param value Value to be removed
          */
-        void remove(int value) {
+        public void remove(int value) {
             possibilityList.remove((Integer)value);
         }
 
@@ -58,7 +58,7 @@ public class Sudoku {
          * @param value Value to look for in the backing list
          * @return Whether the specified value is in the list
          */
-        boolean contains(int value) {
+        public boolean contains(int value) {
             return possibilityList.contains(value);
         }
 
@@ -67,10 +67,19 @@ public class Sudoku {
          *
          * @return Next element of the list
          */
-        int getNext() {
+        public int getNext() {
             return possibilityList.get(0);
         }
 
+        /**
+         * Get the element of the List at the specified index
+         *
+         * @param index index to get from
+         * @return Next element of the list
+         */
+        public int get(int index) {
+            return possibilityList.get(index);
+        }
         @Override
         public Iterator<Integer> iterator() {
             return possibilityList.iterator();
@@ -81,7 +90,7 @@ public class Sudoku {
          *
          * @return Size of the backing list
          */
-        int size() {
+        public int size() {
             return possibilityList.size();
         }
     }
@@ -156,7 +165,7 @@ public class Sudoku {
      *
      * @return  Duplicate board object
      */
-    public Sudoku cloneBoard(){
+    public Sudoku cloneSudoku(){
         int[][] boardClone = new int[size][size];
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
@@ -180,8 +189,7 @@ public class Sudoku {
         int yPosition = entry.getYPosition();
         if(board[xPosition][yPosition] != 0) {
             throw new IllegalArgumentException("The target square is already filled");
-        }
-        if (possibilityList[xPosition][yPosition].contains(entry.getValue())) {
+        } else if (possibilityList[xPosition][yPosition].contains(entry.getValue())) {
             board[xPosition][yPosition] = entry.getValue();
             updatePossibilitySpace(xPosition, yPosition);
             updatePossibilitySpaceAround(xPosition, yPosition);
@@ -213,7 +221,7 @@ public class Sudoku {
      * @param xPosition x value for specifying index
      * @param yPosition y value for specifying index
      */
-    private void updatePossibilitySpaceAround(int xPosition, int yPosition) {
+    protected void updatePossibilitySpaceAround(int xPosition, int yPosition) {
         if(board[xPosition][yPosition] != 0) {
             for (int i = 0; i < size; i++) {
                 possibilityList[xPosition][i].remove(board[xPosition][yPosition]);
@@ -239,7 +247,7 @@ public class Sudoku {
      * @param xPosition x value for specifying index
      * @param yPosition y value for specifying index
      */
-    private void updatePossibilitySpace(int xPosition, int yPosition) {
+    protected void updatePossibilitySpace(int xPosition, int yPosition) {
         //Return if location is already filled
         if(board[xPosition][yPosition] != 0) {
             possibilityList[xPosition][yPosition] = new PossibilitySpace();

@@ -64,9 +64,9 @@ public class SudokuTest {
 
     @Test(timeout = TIMEOUT)
     public void testClone() {
-        assertNotSame(filledSudoku.cloneBoard().getBoard(),filledSudoku.getBoard() );
-        assertTrue(filledSudoku.cloneBoard().equals(filledSudoku));
-        assertFalse(filledSudoku.cloneBoard()==(filledSudoku));
+        assertNotSame(filledSudoku.cloneSudoku().getBoard(),filledSudoku.getBoard() );
+        assertTrue(filledSudoku.cloneSudoku().equals(filledSudoku));
+        assertFalse(filledSudoku.cloneSudoku()==(filledSudoku));
     }
 
     @Test(timeout = TIMEOUT)

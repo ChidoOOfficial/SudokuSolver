@@ -43,7 +43,7 @@ public class SudokuSolver {
             for(int j = 0; j < Sudoku.size; j++) {
                 if(sudoku.isEmpty(i,j)) {
                     for (int possibleValue : sudoku.getPossibilitySpaceIterable(i,j)) {
-                        Sudoku newSudoku = sudoku.cloneBoard();
+                        Sudoku newSudoku = sudoku.cloneSudoku();
                         newSudoku.addValidEntry(new SudokuEntry(i,j,possibleValue));
                         if(newSudoku.isSolved()) {
                             return new SolverOutput(true, newSudoku);
