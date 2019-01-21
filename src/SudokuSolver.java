@@ -1,5 +1,6 @@
 package src;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class SudokuSolver {
@@ -66,7 +67,7 @@ public class SudokuSolver {
     }
 
     public static void main(String[] args) {
-        int[][] sudo = new int[9][9];
+        int[][] sudo = new int[16][16];
         for(int i = 0; i < 9; i++) {
             for(int j = 0; j < 9; j++) {
                 sudo[i][j] = 0;
@@ -108,6 +109,7 @@ public class SudokuSolver {
         sudo[8][4] = 6;
         sudo[8][6] = 1;
         sudo[8][8] = 7;
-        System.out.print(SudokuSolver.SudokuSolver(sudo));
+        Sudoku.setSize(5);
+        System.out.print(SudokuSolver.SudokuSolver(new ArrayList<>()));
     }
 }

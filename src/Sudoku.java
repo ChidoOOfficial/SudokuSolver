@@ -12,7 +12,16 @@ public class Sudoku {
     protected int[][] board;
     protected PossibilitySpace[][] possibilityList;
     protected boolean solvable;
-    protected static int size = 9;
+    protected static int size = 16;
+
+    /**
+     * Set the size of the Sudokus to be created
+     *
+     * @param newSize The square root of the desired size of the Sudoku
+     */
+    public static void setSize(int newSize) {
+        size = newSize * newSize;
+    }
 
     /**
      * Encapsulation of the Possible Value that the Sudoku can take
@@ -125,7 +134,11 @@ public class Sudoku {
      *
      * @param board array of integers to be converted to a Sudoku board
      */
-    public Sudoku(int[][] board) {
+    public Sudoku(int[][] board) throws IllegalArgumentException {
+        if(board[0].length != size || board.length != size) {
+            throw new IllegalArgumentException("Dimension Mismatch");
+        }
+
         this.board = board;
         possibilityList = new PossibilitySpace[size][size];
 
@@ -228,13 +241,11 @@ public class Sudoku {
                 possibilityList[i][yPosition].remove(board[xPosition][yPosition]);
             }
 
-            int p = xPosition / 3;
-            int q = yPosition / 3;
-            p *= 3;
-            q *= 3;
+            int p = (int)(((int)(xPosition/Math.sqrt(size))) * Math.sqrt(size));
+            int q = (int)(((int)(yPosition/Math.sqrt(size))) * Math.sqrt(size));
 
-            for (int i = p; i < p + 3; i++) {
-                for (int j = q; j < q + 3; j++) {
+            for (int i = p; i < p + Math.sqrt(size); i++) {
+                for (int j = q; j < q + Math.sqrt(size); j++) {
                     possibilityList[i][j].remove(board[xPosition][yPosition]);
                 }
             }
@@ -252,8 +263,8 @@ public class Sudoku {
         if(board[xPosition][yPosition] != 0) {
             possibilityList[xPosition][yPosition] = new PossibilitySpace();
         } else {
-            List<Integer> intList = new ArrayList<>(9);
-            for (int i = 1; i < 10; i++) {
+            List<Integer> intList = new ArrayList<>(size);
+            for (int i = 1; i <= size; i++) {
                 intList.add(i);
             }
 
@@ -262,13 +273,12 @@ public class Sudoku {
                 intList.remove((Integer)board[i][yPosition]);
             }
 
-            int p = xPosition / 3;
-            int q = yPosition / 3;
-            p *= 3;
-            q *= 3;
+            int p = (int)(((int)(xPosition/Math.sqrt(size))) * Math.sqrt(size));
+            int q = (int)(((int)(yPosition/Math.sqrt(size))) * Math.sqrt(size));
 
-            for (int i = p; i < p + 3; i++) {
-                for (int j = q; j < q + 3; j++) {
+
+            for (int i = p; i < p + Math.sqrt(size); i++) {
+                for (int j = q; j < q + Math.sqrt(size); j++) {
                     intList.remove((Integer)board[i][j]);
                 }
             }
@@ -343,11 +353,11 @@ public class Sudoku {
     @Override
     public String toString() {
         String outString = "";
-
+        String tmp = "%" + Integer.toString((int)Math.log10(size) + 1) + "d|";
         for (int i = 0; i < size; i++) {
             outString += "|";
             for (int j = 0; j < size; j++) {
-                outString += Integer.toString(board[i][j]) + "|";
+                outString += String.format(tmp, board[i][j]);
             }
             outString += "\n";
 
