@@ -11,8 +11,8 @@ import java.util.*;
 public class Sudoku {
     private int[][] board;
     private PossibilitySpace[][] possibilityList;
-    boolean solvable;
-    public static int size = 9;
+    private boolean solvable;
+    static int size = 9;
 
     /**
      * Encapsulation of the Possible Value that the Sudoku can take
@@ -29,7 +29,7 @@ public class Sudoku {
          * the backing array list
          *
          */
-        public  PossibilitySpace() {
+        PossibilitySpace() {
             possibilityList = new ArrayList<>();
         }
 
@@ -39,7 +39,7 @@ public class Sudoku {
          *
          * @param possibilityList Array to be used as backing array list
          */
-        public PossibilitySpace(List<Integer> possibilityList) {
+        PossibilitySpace(List<Integer> possibilityList) {
             this.possibilityList = possibilityList;
         }
 
@@ -48,7 +48,7 @@ public class Sudoku {
          *
          * @param value Value to be removed
          */
-        public void remove(int value) {
+        void remove(int value) {
             possibilityList.remove((Integer)value);
         }
 
@@ -58,8 +58,17 @@ public class Sudoku {
          * @param value Value to look for in the backing list
          * @return Whether the specified value is in the list
          */
-        public boolean contains(int value) {
+        boolean contains(int value) {
             return possibilityList.contains(value);
+        }
+
+        /**
+         * Get the next element of the List
+         *
+         * @return Next element of the list
+         */
+        int getNext() {
+            return possibilityList.get(0);
         }
 
         @Override
@@ -72,7 +81,7 @@ public class Sudoku {
          *
          * @return Size of the backing list
          */
-        public int size() {
+        int size() {
             return possibilityList.size();
         }
     }
@@ -97,7 +106,8 @@ public class Sudoku {
             board[entry.getXPosition()][entry.getYPosition()] = entry.getValue();
         }
 
-        updateProbabilitySpace();
+        updatePossibilitySpace();
+        autoFillSudoku();
     }
 
     /**
@@ -110,7 +120,8 @@ public class Sudoku {
         this.board = board;
         possibilityList = new PossibilitySpace[size][size];
 
-        updateProbabilitySpace();
+        updatePossibilitySpace();
+        autoFillSudoku();
     }
 
     /**
@@ -126,7 +137,7 @@ public class Sudoku {
             }
         }
 
-        updateProbabilitySpace();
+        updatePossibilitySpace();
     }
 
     //Public Methods
@@ -163,19 +174,20 @@ public class Sudoku {
      *
      * @return  true or false depending on if the desired entry is empty
      */
-    public boolean addEntry(SudokuEntry entry){
+    public boolean addNewEntry(SudokuEntry entry) throws IllegalArgumentException{
+
         int xPosition = entry.getXPosition();
         int yPosition = entry.getYPosition();
-        int currentValue = board[xPosition][yPosition];
-        board[xPosition][yPosition] = entry.getValue();
-
-        if (CheckValidity(xPosition,yPosition)) {
-            updateProbabilitySpace(xPosition, yPosition);
-            updateProbabilitySpaceAround(xPosition, yPosition);
-            solvable = checkSolvable();
+        if(board[xPosition][yPosition] != 0) {
+            throw new IllegalArgumentException("The target square is already filled");
+        }
+        if (possibilityList[xPosition][yPosition].contains(entry.getValue())) {
+            board[xPosition][yPosition] = entry.getValue();
+            updatePossibilitySpace(xPosition, yPosition);
+            updatePossibilitySpaceAround(xPosition, yPosition);
+            autoFillSudoku();
             return true;
         } else {
-            board[xPosition][yPosition] = currentValue;
             return false;
         }
     }
@@ -189,9 +201,9 @@ public class Sudoku {
         int xPosition = entry.getXPosition();
         int yPosition = entry.getYPosition();
         board[xPosition][yPosition] = entry.getValue();
-        updateProbabilitySpace(xPosition, yPosition);
-        updateProbabilitySpaceAround(xPosition, yPosition);
-        solvable = checkSolvable();
+        updatePossibilitySpace(xPosition, yPosition);
+        updatePossibilitySpaceAround(xPosition, yPosition);
+        autoFillSudoku();
     }
 
     /**
@@ -201,7 +213,7 @@ public class Sudoku {
      * @param xPosition x value for specifying index
      * @param yPosition y value for specifying index
      */
-    private void updateProbabilitySpaceAround(int xPosition, int yPosition) {
+    private void updatePossibilitySpaceAround(int xPosition, int yPosition) {
         if(board[xPosition][yPosition] != 0) {
             for (int i = 0; i < size; i++) {
                 possibilityList[xPosition][i].remove(board[xPosition][yPosition]);
@@ -210,6 +222,8 @@ public class Sudoku {
 
             int p = xPosition / 3;
             int q = yPosition / 3;
+            p *= 3;
+            q *= 3;
 
             for (int i = p; i < p + 3; i++) {
                 for (int j = q; j < q + 3; j++) {
@@ -225,10 +239,10 @@ public class Sudoku {
      * @param xPosition x value for specifying index
      * @param yPosition y value for specifying index
      */
-    private void updateProbabilitySpace(int xPosition, int yPosition) {
+    private void updatePossibilitySpace(int xPosition, int yPosition) {
         //Return if location is already filled
         if(board[xPosition][yPosition] != 0) {
-            possibilityList[xPosition][yPosition] = new PossibilitySpace(new ArrayList<>());
+            possibilityList[xPosition][yPosition] = new PossibilitySpace();
         } else {
             List<Integer> intList = new ArrayList<>(9);
             for (int i = 1; i < 10; i++) {
@@ -242,6 +256,8 @@ public class Sudoku {
 
             int p = xPosition / 3;
             int q = yPosition / 3;
+            p *= 3;
+            q *= 3;
 
             for (int i = p; i < p + 3; i++) {
                 for (int j = q; j < q + 3; j++) {
@@ -254,68 +270,42 @@ public class Sudoku {
     }
 
     /**
-     * Update the possibility space of a all square on the board
+     * Update the possibility space of all square on the board
      *
      */
-    private void updateProbabilitySpace() {
+    private void updatePossibilitySpace() {
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                updateProbabilitySpace(i, j);
+                updatePossibilitySpace(i, j);
             }
         }
 
-        solvable = checkSolvable();
+        checkSolvable();
     }
 
-    private boolean CheckValidity(int xPosition, int yPosition) {
-        if(board[xPosition][yPosition] == 0) {
-            return true;
-        } else {
+    public void autoFillSudoku(){
+
+        boolean changeMade;
+        do{
+            changeMade = false;
             for (int i = 0; i < size; i++) {
-                if (i != xPosition) {
-                    if (board[i][yPosition] == board[xPosition][yPosition]) {
-                        return false;
+                for(int j = 0; j < size; j++){
+                    if(possibilityList[i][j].size() == 1) {
+                        board[i][j] = possibilityList[i][j].getNext();
+                        updatePossibilitySpace(i,j);
+                        updatePossibilitySpaceAround(i,j);
+                        changeMade = true;
+                        break;
                     }
                 }
-
-                if (i != yPosition) {
-                    if (board[xPosition][i] == board[xPosition][yPosition]) {
-                        return false;
-                    }
-                }
+                if(changeMade) break;
             }
-
-            int p = xPosition / 3;
-            int q = yPosition / 3;
-
-            for (int i = p; i < p + 3; i++) {
-                for (int j = q; j < q + 3; j++) {
-                    if (i != xPosition || j != yPosition) {
-                        if (board[i][j] == board[xPosition][yPosition]) {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            return true;
-        }
+        }while(changeMade);
+        checkSolvable();
     }
 
-    private boolean CheckValidity() {
-        for (int i = 0; i < size; i++) {
-            for (int j = 0; j < size; j++) {
-                if( !CheckValidity(i, j)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    public boolean checkSolvable() {
-        boolean validSolvable = true;
+    public void checkSolvable() {
+        solvable  = true;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if(board[i][j] == 0 && possibilityList[i][j].size() == 0) {
@@ -323,8 +313,6 @@ public class Sudoku {
                 }
             }
         }
-
-        return validSolvable;
     }
 
     /**
@@ -393,6 +381,13 @@ public class Sudoku {
             return false;
         }
     }
+
+
+    //Test Methods
+    public int possibilitySpaceSize(int i, int j) {
+        for (int x : possibilityList[i][j]) {
+            System.out.println(x);
+        }
+        return possibilityList[i][j].size();
+    }
 }
-
-

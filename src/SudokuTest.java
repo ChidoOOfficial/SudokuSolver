@@ -13,7 +13,7 @@ import static org.junit.Assert.*;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SudokuTest {
-    private Sudoku blankSudoku, filledSudoku;
+    private Sudoku blankSudoku, filledSudoku, filledSudokuGood;
     private static final int TIMEOUT = 200;
     private static int testsPassed = 0;
     private static int exceptionsFailed = 0;
@@ -31,6 +31,13 @@ public class SudokuTest {
 
         filledSudoku = new Sudoku(fixedEntries);
         blankSudoku = new Sudoku();
+
+        fixedEntries = new ArrayList<SudokuEntry>();
+        for (int i = 0; i < Sudoku.size - 1; i++) {
+            fixedEntries.add(new SudokuEntry(i,0,i + 1));
+        }
+
+        filledSudokuGood = new Sudoku(fixedEntries);
     }
 
     @Test(timeout = TIMEOUT)
@@ -74,7 +81,28 @@ public class SudokuTest {
 
         Sudoku newSudoku = new Sudoku(fixedEntries);
 
-        newSudoku.addEntry(new SudokuEntry(8,2,3));
+        newSudoku.addNewEntry(new SudokuEntry(8,2,3));
         assertEquals(newSudoku, filledSudoku);
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void testSolvable(){
+        List<SudokuEntry> fixedEntries = new ArrayList<SudokuEntry>();
+        for (int i = 0; i < 5; i++) {
+            fixedEntries.add(new SudokuEntry(i,0,i + 1));
+        }
+
+        fixedEntries.add(new SudokuEntry(8,4,6));
+        fixedEntries.add(new SudokuEntry(8,7,8));
+        fixedEntries.add(new SudokuEntry(7,2,9));
+
+        Sudoku sudo = new Sudoku(fixedEntries);
+        assertEquals(0,sudo.possibilitySpaceSize(8,0));
+        assertTrue(sudo.isSolvable());
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void testSolver(){
+        assertNotEquals(null, SudokuSolver.SudokuSolver(new ArrayList<>()).toString());
     }
 }
