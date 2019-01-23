@@ -12,7 +12,7 @@ public class Sudoku {
     protected int[][] board;
     protected PossibilitySpace[][] possibilityList;
     protected boolean solvable;
-    protected static int size = 16;
+    public static int size = 16;
 
     /**
      * Set the size of the Sudokus to be created

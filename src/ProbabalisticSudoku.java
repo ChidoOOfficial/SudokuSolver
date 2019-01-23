@@ -57,7 +57,6 @@ public class ProbabalisticSudoku extends Sudoku {
                 entropy += calculateEntropy(i,j);
             }
         }
-        entropy /= 2;
     }
 
     private int calculateEntropy(int xPosition, int yPosition) {
@@ -71,14 +70,13 @@ public class ProbabalisticSudoku extends Sudoku {
             }
         }
 
-        int p = xPosition / 3;
-        int q = yPosition / 3;
-        p *= 3;
-        q *= 3;
+        int p = (int)(((int)(xPosition/Math.sqrt(size))) * Math.sqrt(size));
+        int q = (int)(((int)(yPosition/Math.sqrt(size))) * Math.sqrt(size));
 
-        for (int i = p; i < p + 3; i++) {
-            for (int j = q; j < q + 3; j++) {
-                if(board[i][yPosition] == board[xPosition][yPosition] && i != xPosition && j != yPosition) {
+
+        for (int i = p; i < p + Math.sqrt(size); i++) {
+            for (int j = q; j < q + Math.sqrt(size); j++){
+                if(board[i][j] == board[xPosition][yPosition] && i != xPosition && j != yPosition) {
                     sumEntropy++;
                 }
             }
@@ -140,4 +138,23 @@ public class ProbabalisticSudoku extends Sudoku {
             }
         }
     }
+
+    public void swapSquares(int x1Position, int y1Position, int x2Position, int y2Position) {
+        //Manage Updating Entropy Efficiently
+        int entropyChange = 2 * calculateEntropy(x1Position, y1Position);
+        entropyChange += 2 * calculateEntropy(x2Position, y2Position);
+        int tmp = board[x1Position][y1Position];
+        board[x1Position][y1Position] = board[x2Position][y2Position];
+        board[x2Position][y2Position] = tmp;
+
+        entropyChange -= 2 * calculateEntropy(x1Position, y1Position);
+        entropyChange -= 2 * calculateEntropy(x2Position, y2Position);
+
+        entropy -= entropyChange;
+    }
+
+    public boolean isFixed(int xPosition, int yPosition) {
+        return fixed[xPosition][yPosition];
+    }
+
 }

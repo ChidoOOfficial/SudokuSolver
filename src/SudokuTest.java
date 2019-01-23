@@ -14,12 +14,14 @@ import static org.junit.Assert.*;
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SudokuTest {
     private Sudoku blankSudoku, filledSudoku, filledSudokuGood;
+    private ProbabalisticSudoku probSudoku;
     private static final int TIMEOUT = 200;
     private static int testsPassed = 0;
     private static int exceptionsFailed = 0;
 
     @Before
     public void setUp() {
+        probSudoku = new ProbabalisticSudoku();
         List<SudokuEntry> fixedEntries = new ArrayList<SudokuEntry>();
 
         for (int i = 0; i < Sudoku.size; i++) {
@@ -104,5 +106,10 @@ public class SudokuTest {
     @Test(timeout = TIMEOUT)
     public void testSolver(){
         assertNotEquals(null, SudokuSolver.SudokuSolver(new ArrayList<>()).toString());
+    }
+
+    @Test(timeout = TIMEOUT)
+    public void probabalisticSudokuTest() {
+
     }
 }
