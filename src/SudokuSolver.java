@@ -1,23 +1,41 @@
 package src;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-public class SudokuSolver {
+public abstract class SudokuSolver {
 
+    /**
+     * Solver Sudoku method for utilizing the (DFS) sudoku
+     * solving algorithm
+     *
+     * @param fixedEntries List of fixed entried
+     * @return Solved Sudoku
+     */
     public static Sudoku SudokuSolver(List<SudokuEntry> fixedEntries) {
         Sudoku startingSudoku = new Sudoku(fixedEntries);
         SolverOutput solverOutput =  SolveSudoku(startingSudoku);
         return solverOutput.getSudoku();
     }
 
+    /**
+     * Solver Sudoku method for utilizing the (DFS) sudoku
+     * solving algorithm
+     *
+     * @param sudoku array representing sudoku
+     * @return Solved Sudoku
+     */
     public static Sudoku SudokuSolver(int[][] sudoku) {
         Sudoku startingSudoku = new Sudoku(sudoku);
         SolverOutput solverOutput =  SolveSudoku(startingSudoku);
         return solverOutput.getSudoku();
     }
 
+    /**
+     * Method that implements the algorithm
+     *
+     * @param sudoku Input Sudoku to solve
+     * @return Output from the Solver
+     */
     private static SolverOutput SolveSudoku(Sudoku sudoku) {
         for(int i = 0; i < Sudoku.size; i++) {
             for(int j = 0; j < Sudoku.size; j++) {

@@ -8,7 +8,7 @@ public abstract class ProbabalisticSudokuSolver {
 
     /**
      * Solver Sudoku method for utilizing the  probabilistic sudoku
-     * solving algortihm
+     * solving algorithm
      *
      * @param fixedEntries List of fixed entried
      * @return Solved Sudoku
@@ -21,7 +21,7 @@ public abstract class ProbabalisticSudokuSolver {
 
     /**
      * Solver Sudoku method for utilizing the  probabilistic sudoku
-     * solving algortihm
+     * solving algorithm
      *
      * @param sudoku array representing sudoku
      * @return Solved Sudoku
