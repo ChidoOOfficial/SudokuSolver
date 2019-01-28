@@ -4,11 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * Sudoku class encapsulates the Sudoku board with
+ * any given board state and is calculates the entropy of the board for
+ * the probabilistic solving algorithm
+ *
+ * @author Chidozie Onyeze
+ * @version 1.0
+ */
 public class ProbabalisticSudoku extends Sudoku {
     private int entropy;
     private boolean[][] fixed;
     Random rand = new Random();
 
+    /**
+     * Constructor for making a board with known elements
+     * and making all unknown elements empty
+     *
+     * @param fixedEntries list of the known elements
+     */
     public ProbabalisticSudoku(List<SudokuEntry> fixedEntries) {
         super(fixedEntries);
 
@@ -23,6 +37,12 @@ public class ProbabalisticSudoku extends Sudoku {
         calculateBoardEntropy();
     }
 
+    /**
+     * Constructor for making a board from a known array
+     * of integers
+     *
+     * @param board array of integers to be converted to a Sudoku board
+     */
     public ProbabalisticSudoku(int[][] board) {
         super(board);
 
@@ -36,6 +56,10 @@ public class ProbabalisticSudoku extends Sudoku {
         calculateBoardEntropy();
     }
 
+    /**
+     * Constructor for making a new empty board
+     *
+     */
     public ProbabalisticSudoku() {
         super();
 
@@ -50,6 +74,10 @@ public class ProbabalisticSudoku extends Sudoku {
         calculateBoardEntropy();
     }
 
+    /**
+     * Calculated the total number of violation on the board
+     * (ie. the entropy) and sets the entropy variable
+     */
     private void calculateBoardEntropy(){
         entropy = 0;
         for(int i = 0; i < size; i++) {
@@ -59,6 +87,13 @@ public class ProbabalisticSudoku extends Sudoku {
         }
     }
 
+    /**
+     * Calculate the number of violation caused by any given square
+     *
+     * @param xPosition the x position of the square to check
+     * @param yPosition the y position of the square to check
+     * @return the number of violations
+     */
     private int calculateEntropy(int xPosition, int yPosition) {
         int sumEntropy = 0;
         for (int i = 0; i < size; i++) {
@@ -84,6 +119,10 @@ public class ProbabalisticSudoku extends Sudoku {
         return sumEntropy;
     }
 
+    /**
+     * Getter for entropy value
+     * @return entropy value
+     */
     public int getEntropy() {
         return entropy;
     }
@@ -99,6 +138,10 @@ public class ProbabalisticSudoku extends Sudoku {
         return new ProbabalisticSudoku(boardClone);
     }
 
+    /**
+     * Fill the board with number such that there are the correct number
+     * of each number in the board
+     */
     private void fillBoard() {
         List<Integer> availableValues = new ArrayList<>();
         for (int i = 1; i <= size; i++) {
@@ -139,6 +182,14 @@ public class ProbabalisticSudoku extends Sudoku {
         }
     }
 
+    /**
+     * Swap the contents of square 1 and square 2 and recalculate entropy
+     *
+     * @param x1Position x value of square 1
+     * @param y1Position y value of square 1
+     * @param x2Position x value of square 2
+     * @param y2Position y value of square 2
+     */
     public void swapSquares(int x1Position, int y1Position, int x2Position, int y2Position) {
         //Manage Updating Entropy Efficiently
         int entropyChange = 2 * calculateEntropy(x1Position, y1Position);
@@ -153,6 +204,12 @@ public class ProbabalisticSudoku extends Sudoku {
         entropy -= entropyChange;
     }
 
+    /**
+     * Getter for isFixed for a given square
+     * @param xPosition x value of the square
+     * @param yPosition x value of the square
+     * @return
+     */
     public boolean isFixed(int xPosition, int yPosition) {
         return fixed[xPosition][yPosition];
     }
