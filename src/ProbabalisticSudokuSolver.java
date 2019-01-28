@@ -4,20 +4,40 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class ProbabalisticSudokuSolver {
+public abstract class ProbabalisticSudokuSolver {
 
+    /**
+     * Solver Sudoku method for utilizing the  probabilistic sudoku
+     * solving algortihm
+     *
+     * @param fixedEntries List of fixed entried
+     * @return Solved Sudoku
+     */
     public static Sudoku SudokuSolver(List<SudokuEntry> fixedEntries) {
         ProbabalisticSudoku startingSudoku = new ProbabalisticSudoku(fixedEntries);
         SolverOutput solverOutput =  SolveSudoku(startingSudoku);
         return solverOutput.getSudoku();
     }
 
+    /**
+     * Solver Sudoku method for utilizing the  probabilistic sudoku
+     * solving algortihm
+     *
+     * @param sudoku array representing sudoku
+     * @return Solved Sudoku
+     */
     public static Sudoku SudokuSolver(int[][] sudoku) {
         ProbabalisticSudoku startingSudoku = new ProbabalisticSudoku(sudoku);
         SolverOutput solverOutput =  SolveSudoku(startingSudoku);
         return solverOutput.getSudoku();
     }
 
+    /**
+     * Method that implements the algorithm
+     *
+     * @param sudoku Input Sudoku to solve
+     * @return Output from the Solver
+     */
     private static SolverOutput SolveSudoku(ProbabalisticSudoku sudoku) {
         int minEntropy = sudoku.getEntropy();
         int initial = sudoku.getEntropy();
@@ -69,8 +89,7 @@ public class ProbabalisticSudokuSolver {
     }
 
     public static void main(String[] args) {
-        Sudoku.setSize(3);
-        System.out.print(ProbabalisticSudokuSolver.SudokuSolver(new ArrayList<>()));
+        Test1();
 
     }
 
@@ -101,11 +120,11 @@ public class ProbabalisticSudokuSolver {
         sudo[4][2] = 6;
         sudo[4][4] = 8;
         sudo[4][5] = 4;
-        sudo[5][4] = 9;
+        /*sudo[5][4] = 9;
         sudo[5][5] = 3;
         sudo[5][7] = 7;
         sudo[6][0] = 6;
-        sudo[6][1] = 5;
+        sudo[6][1] = 5;*/
         sudo[6][2] = 1;
         sudo[6][5] = 9;
         sudo[6][7] = 2;

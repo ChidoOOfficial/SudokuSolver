@@ -108,8 +108,4 @@ public class SudokuTest {
         assertNotEquals(null, SudokuSolver.SudokuSolver(new ArrayList<>()).toString());
     }
 
-    @Test(timeout = TIMEOUT)
-    public void probabalisticSudokuTest() {
-
-    }
 }
