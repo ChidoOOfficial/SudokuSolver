@@ -214,4 +214,6 @@ public class ProbabalisticSudoku extends Sudoku {
         return fixed[xPosition][yPosition];
     }
 
+    /** New code */
+
 }
